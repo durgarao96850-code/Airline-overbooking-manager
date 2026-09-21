@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Dashboard - Airline Overbooking</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-light">
+    <div class="container my-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2> Flight Management & Analytics Dashboard</h2>
+            <a href="/" class="btn btn-outline-secondary">Back to Home</a>
+        </div>
+
+        {% if error %}
+            <div class="alert alert-danger">{{ error }}</div>
+        {% endif %}
+
+        <!-- Top Metrics Cards -->
+        <div class="row text-center mb-4">
+            <div class="col-md-4">
+                <div class="card p-3 shadow-sm border-primary">
+                    <h6 class="text-muted">Python Probability (No-Show)</h6>
+                    <h3 class="text-primary fw-bold">{{ rate }}%</h3>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card p-3 shadow-sm border-success">
+                    <h6 class="text-muted">Safe Booking Limit</h6>
+                    <h3 class="text-success fw-bold">{{ limit }}</h3>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card p-3 shadow-sm border-info">
+                    <h6 class="text-muted">Current Active Bookings</h6>
+                    <h3 class="text-info fw-bold">{{ count }}</h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- DMGT & ADSA Proof Cards -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card p-3 shadow-sm bg-white">
+                    <h5 class="text-secondary"> DMGT: Set Theory Partitioning</h5>
+                    <small class="text-muted mb-2">Partitioned Sets: S = E ∪ B ∪ F (Disjoint Sets)</small>
+                    <div class="p-2 border rounded bg-light">
+                        <p class="mb-1"><strong>Economy Set (E):</strong> { {{ e_set | join(', ') }} }</p>
+                        <p class="mb-1"><strong>Business Set (B):</strong> { {{ b_set | join(', ') }} }</p>
+                        <p class="mb-0"><strong>First Class Set (F):</strong> { {{ f_set | join(', ') }} }</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card p-3 shadow-sm bg-white">
+                    <h5 class="text-secondary"> ADSA: B-Tree Index Status</h5>
+                    <small class="text-muted mb-2">Indexing Bookings using B-Tree Node Keys</small>
+                    <div class="p-2 border rounded bg-light">
+                        <p class="mb-1"><strong>Root Node Keys:</strong> [ {% for p in passengers %}{{ p.id }}{% if not loop.last %}, {% endif %}{% endfor %} ]</p>
+                        <p class="mb-0 text-success">✔ Index Search Time: O(log N) | Balanced Tree</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Graph & Form -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card p-3 shadow-sm">
+                    <h5> Historical Data Visualizer</h5>
+                    <canvas id="historicalChart" height="150"></canvas>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card p-3 shadow-sm">
+                    <h5> Add New Booking</h5>
+                    <form action="/dashboard" method="POST">
+                        <div class="mb-2">
+                            <label class="form-label">Passenger Name</label>
+                            <input type="text" name="passenger_name" class="form-control" required placeholder="Enter Name">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Fare Class</label>
+                            <select name="fare_class" class="form-select">
+                                <option value="Economy">Economy</option>
+                                <option value="Business">Business</option>
+                                <option value="FirstClass">First Class</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-success w-100">Book Ticket</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Table -->
+        <div class="card p-3 shadow-sm">
+            <h5> Passenger Manifest (DMGT Partition Table)</h5>
+            <table class="table table-striped align-middle">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Booking ID (ADSA Key)</th>
+                        <th>Passenger Name</th>
+                        <th>Fare Class</th>
+                        <th>DMGT Set Tag</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in passengers %}
+                    <tr>
+                        <td><strong>#{{ p.id }}</strong></td>
+                        <td>{{ p.name }}</td>
+                        <td><span class="badge bg-primary">{{ p.class }}</span></td>
+                        <td><span class="badge bg-secondary">Set {{ p.set }}</span></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Chart Script -->
+    <script>
+        const ctx = document.getElementById('historicalChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: ['Shows (Attended)', 'No-Shows'],
+                datasets: [{
+                    data: [{{ total_b - total_ns }}, {{ total_ns }}],
+                    backgroundColor: ['#28a745', '#dc3545']
+                }]
+            }
+        });
+    </script>
+</body>
+</html>

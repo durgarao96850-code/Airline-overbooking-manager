@@ -1,0 +1,11 @@
+booking_id,fare_class,show_status
+101,Economy,yes
+102,Business,no
+103,Economy,yes
+104,Economy,no
+105,FirstClass,yes
+106,Economy,no
+107,Business,yes
+108,Economy,yes
+109,FirstClass,no
+110,Economy,yes
